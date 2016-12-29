@@ -40,15 +40,21 @@ function main() {
 		})
 	}
 
-	function handleSubmit() {
-		$('.search-bar').submit(function(event){
-			event.preventDefault();
+	function searchOnKeyup() {
+		$('.search-bar').keyup(function(event) {
 			state.searchText = $('.search-input').val();
 			getResults('&q=' + state.searchText);
 		})
 	}
 
-	handleSubmit();
+	function stopSubmit() {
+		$('.search-bar').submit(function(event){
+			event.preventDefault();
+		})
+	}
+
+	searchOnKeyup();
+	stopSubmit();
 }
 
 $(document).ready(main)
