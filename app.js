@@ -5,11 +5,34 @@ function main() {
 		apiKey: 'AIzaSyAdSi0DTP0Jbdzu5ahkJj5zWHDTAf4I13E'
 	}
 
-	function getResults() {
+	function playVideo() {
+		$('.results').on('click', 'img', function() {
+			$('.video-frame').html(
+				'<iframe width="560" height="315" src="https://www.youtube.com/embed/' + $(this).parent().attr('id') + '" frameborder="0" allowfullscreen></iframe>'
+				)
+		})
+	}
+
+	function getMoreFromChannel() {
+		$('.channel-link').click(function(){
+			getResults('&channelId=' + $(this).attr('id'));
+		})
+	}
+
+	function renderList() {
+		var listHTML = state.results.map(function(item){
+			return '<li><div class="results" id="' + item.id.videoId + '"><img src="' + item.snippet.thumbnails.default.url + '"><p>' + item.snippet.title + '</p>' + 
+						 '<p class="channel-link" id="' + item.snippet.channelId + '">Channel: ' + item.snippet.channelTitle + '</p></div></li>';
+		})
+		$('#result-list').html(listHTML);
+		playVideo();
+		getMoreFromChannel();
+	}
+
+	function getResults(query) {
 		var settings = {
-			url: "https://www.googleapis.com/youtube/v3/search?key=" + state.apiKey + "&part=snippet&q=" + state.searchText + "",
+			url: "https://www.googleapis.com/youtube/v3/search?key=" + state.apiKey + "&part=snippet" + query + "",
 			method: "GET",
-			dataType: 'json',
 		};
 		$.ajax(settings).done(function(response) {
 			state.results = response.items;
@@ -17,19 +40,11 @@ function main() {
 		})
 	}
 
-	function renderList() {
-		var listHTML = state.results.map(function(item){
-			return '<li> <img src="' + item.snippet.thumbnails.default.url + '"><p>' + item.snippet.title + '</p></li>';
-		})
-		$('#result-list').html(listHTML);
-	}
-
 	function handleSubmit() {
 		$('.search-bar').submit(function(event){
 			event.preventDefault();
 			state.searchText = $('.search-input').val();
-			console.log(state);
-			getResults();
+			getResults('&q=' + state.searchText);
 		})
 	}
 
